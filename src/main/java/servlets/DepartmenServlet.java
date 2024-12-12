@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@WebServlet("/departments/")
+@WebServlet("/departments/*")
 public class DepartmenServlet extends HttpServlet {
     private Service departmentService;
     private ObjectMapper objectMapper;

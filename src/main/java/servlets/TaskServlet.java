@@ -7,12 +7,14 @@ import dto.TaskDTO;
 import services.Service;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+@WebServlet("/tasks/*")
 public class TaskServlet extends HttpServlet {
     private Service taskService;
     private ObjectMapper objectMapper;
