@@ -66,4 +66,15 @@ public class UserDTO {
     public void setTaskList(List<TaskDTO> taskList) {
         this.taskList = taskList;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "user_id = " + user_id +
+                ", user_firstname = '" + user_firstname + '\'' +
+                ", user_lastname = '" + user_lastname + '\'' +
+                ", department = " + department +
+                ", taskList = " + taskList +
+                '}';
+    }
 }

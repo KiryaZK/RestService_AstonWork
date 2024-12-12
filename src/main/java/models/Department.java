@@ -2,6 +2,7 @@ package models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Relation:
@@ -51,5 +52,32 @@ public class Department {
 
     public void setTaskList(List<Task> taskList) {
         this.taskList = taskList;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(department_id, department_name, userList, taskList);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+        Department department = (Department) obj;
+
+        return Objects.equals(department_id, department.department_id) &&
+                Objects.equals(department_name, department.department_name) &&
+                Objects.equals(userList, department.userList) &&
+                Objects.equals(taskList, department.taskList);
+    }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "department_id = " + department_id +
+                ", department_name = '" + department_name + '\'' +
+                ", userList = " + userList +
+                ", taskList = " + taskList +
+                '}';
     }
 }

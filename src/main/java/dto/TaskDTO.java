@@ -55,4 +55,14 @@ public class TaskDTO {
     public List<UserDTO> getUserList() {
         return userList;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "task_id = " + task_id +
+                ", task_name = '" + task_name + '\'' +
+                ", department = " + department +
+                ", userList = " + userList +
+                '}';
+    }
 }

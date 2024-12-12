@@ -54,4 +54,14 @@ public class DepartmentDTO {
     public void setTaskList(List<TaskDTO> taskList) {
         this.taskList = taskList;
     }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "department_id = " + department_id +
+                ", department_name = '" + department_name + '\'' +
+                ", userList = " + userList +
+                ", taskList = " + taskList +
+                '}';
+    }
 }
