@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@WebServlet("/departments/*")
+//@WebServlet("/departments/*")
 public class DepartmenServlet extends HttpServlet {
     private Service departmentService;
     private ObjectMapper objectMapper;
@@ -81,7 +81,7 @@ public class DepartmenServlet extends HttpServlet {
     }
 
     private void getByID(HttpServletResponse resp, String pathValue) throws IOException {
-        Optional<DepartmentDTO> departmentDTO = departmentService.get(pathValue.substring(1));
+        Optional<DepartmentDTO> departmentDTO = departmentService.get(Long.valueOf(pathValue.substring(1)));
         if (departmentDTO.isPresent()) {
             resp.setContentType("application/json");
             resp.getWriter().write(objectMapper.writeValueAsString(departmentDTO.get()));

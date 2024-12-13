@@ -9,8 +9,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class DBConnection {
-    private static HikariDataSource dataSource;
-    private static HikariConfig config;
+    private static final HikariDataSource dataSource;
 
     static {
         try (InputStream inputStream = DBConnection.class.getClassLoader().getResourceAsStream("db.properties"))
@@ -18,15 +17,15 @@ public class DBConnection {
             Properties properties = new Properties();
             properties.load(inputStream);
 
-            config = new HikariConfig();
+            HikariConfig config = new HikariConfig();
             config.setJdbcUrl(properties.getProperty("db.url"));
-            config.setUsername("db.user");
-            config.setPassword("db.password");
+            config.setUsername(properties.getProperty("db.user"));
+            config.setPassword(properties.getProperty("db.password"));
 
             dataSource = new HikariDataSource(config);
         }
         catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("DBConnection is failed", e);
         }
     }
 

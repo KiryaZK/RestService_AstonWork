@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@WebServlet("/tasks/*")
+//@WebServlet("/tasks/*")
 public class TaskServlet extends HttpServlet {
     private Service taskService;
     private ObjectMapper objectMapper;
@@ -82,7 +82,7 @@ public class TaskServlet extends HttpServlet {
     }
 
     private void getByID(HttpServletResponse resp, String pathValue) throws IOException {
-        Optional<TaskDTO> taskDTO = taskService.get(pathValue.substring(1));
+        Optional<TaskDTO> taskDTO = taskService.get(Long.valueOf(pathValue.substring(1)));
         if (taskDTO.isPresent()) {
             resp.setContentType("application/json");
             resp.getWriter().write(objectMapper.writeValueAsString(taskDTO.get()));

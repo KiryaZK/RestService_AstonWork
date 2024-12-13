@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@WebServlet("/users/*")
+
 public class UserServlet extends HttpServlet {
     private Service userService;
     private ObjectMapper objectMapper;
@@ -82,7 +82,7 @@ public class UserServlet extends HttpServlet {
     }
 
     private void getByID(HttpServletResponse resp, String pathValue) throws IOException {
-        Optional<UserDTO> userDTO = userService.get(pathValue.substring(1));
+        Optional<UserDTO> userDTO = userService.get(Long.valueOf(pathValue.substring(1)));
         if (userDTO.isPresent()) {
             resp.setContentType("application/json");
             resp.getWriter().write(objectMapper.writeValueAsString(userDTO.get()));
