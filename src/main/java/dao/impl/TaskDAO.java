@@ -4,6 +4,8 @@ import dao.DAO;
 import models.Department;
 import models.Task;
 import models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -56,6 +58,7 @@ public class TaskDAO implements DAO<Task, Long> {
     private static final String user_id = "user_id";
     private static final String user_firstname = "user_firstname";
     private static final String user_lastname = "user_lastname";
+    private static final Logger log = LoggerFactory.getLogger(DepartmentDAO.class.getName());
 
     public TaskDAO(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -117,8 +120,7 @@ public class TaskDAO implements DAO<Task, Long> {
             PreparedStatement stmAllTasks = connection.prepareStatement(SELECT_ALL_SQL)) {
 
 
-            try (ResultSet rslAllTasks = stmAllTasks.executeQuery();
-                PreparedStatement stmListUsers = connection.prepareStatement(SELECT_LIST_USERS_SQL)) {
+            try (ResultSet rslAllTasks = stmAllTasks.executeQuery()) {
 
                 List<Task> taskList = new ArrayList<>();
 
@@ -128,27 +130,41 @@ public class TaskDAO implements DAO<Task, Long> {
                             rslAllTasks.getString(department_name)
                     );
 
+                    // Логирование временного объекта
+                    log.debug("Retrieved tempDep: {}", tempDep);
+
                     Task task = new Task(
                             rslAllTasks.getLong(task_id),
                             rslAllTasks.getString(task_name),
                             tempDep
                     );
 
-                    stmListUsers.setLong(1, rslAllTasks.getLong(task_id));
+                    // Логирование временного объекта
+                    log.debug("Retrieved task: {}", task);
+                    try (PreparedStatement stmListUsers = connection.prepareStatement(SELECT_LIST_USERS_SQL)) {
 
-                    try (ResultSet rslListUsersForTask = stmListUsers.executeQuery()) {
+                        stmListUsers.setLong(1, rslAllTasks.getLong(task_id));
 
-                        while (rslListUsersForTask.next()) {
-                            User tempUsr = new User(
-                                    rslAllTasks.getLong(user_id),
-                                    rslAllTasks.getString(user_firstname),
-                                    rslAllTasks.getString(user_lastname),
-                                    tempDep
-                            );
-                            task.getUserList().add(tempUsr);
+                        try (ResultSet rslListUsersForTask = stmListUsers.executeQuery()) {
+
+                            while (rslListUsersForTask.next()) {
+                                //TODO: Возможно проблема в том, что user_id 2 столбца в одной результ. таблице, укажи кон-ые столбцы
+                                User tempUsr = new User(
+                                        rslAllTasks.getLong(user_id),
+                                        rslAllTasks.getString(user_firstname),
+                                        rslAllTasks.getString(user_lastname),
+                                        tempDep
+                                );
+                                // Логирование временного объекта
+                                log.debug("tempUser: {}", tempUsr);
+                                task.getUserList().add(tempUsr);
+                            }
                         }
                     }
+
                     taskList.add(task);
+                    // Логирование временного объекта
+                    log.debug("taskList {}", taskList);
                 }
 
                 return taskList;

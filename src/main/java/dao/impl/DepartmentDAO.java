@@ -4,6 +4,8 @@ import dao.DAO;
 import models.Department;
 import models.Task;
 import models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -46,6 +48,7 @@ public class DepartmentDAO implements DAO<Department, Long> {
     public static final String user_id = "user_id";
     private static final String user_firstName = "user_firstname";
     private static final String user_lastName = "user_lastname";
+    private static final Logger log = LoggerFactory.getLogger(DepartmentDAO.class.getName());
 
     public DepartmentDAO(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -127,38 +130,59 @@ public class DepartmentDAO implements DAO<Department, Long> {
                             resultSet.getLong(department_id),
                             resultSet.getString(department_name)
                     );
+                    // Логирование временного объекта
+                    log.debug("Retrieved department: {}", temp);
 
-                    statementListTasks.setLong(1, resultSet.getLong(departments_id));
+                    statementListTasks.setLong(1, resultSet.getLong(department_id));
                     statementListUsers.setLong(1, resultSet.getLong(department_id));
+
+                    log.info("setLong for 136 and 137");
 
                     try (ResultSet resultSetListTasks = statementListTasks.executeQuery();
                          ResultSet resultSetListUsers = statementListUsers.executeQuery()) {
-
+                        log.debug("resultSetListTasks: {} and resultSetListUsers: {}", resultSetListTasks, resultSetListUsers);
                         while (resultSetListTasks.next()) {
+                            Task task = new Task(
+                                    resultSetListTasks.getLong(task_id),
+                                    resultSetListTasks.getString(task_name),
+                                    temp
+                            );
+                            // Логирование временного объекта
+                            log.debug("Retrieved task: {}", task);
                             temp.getTaskList().add(
-                                    new Task(
+/*                                    new Task(
                                             resultSetListTasks.getLong(task_id),
                                             resultSetListTasks.getString(task_name),
                                             temp
-                                    )
+                                    )*/
+                                    task
                             );
                         }
 
                         while (resultSetListUsers.next()) {
+                            User user =                                    new User(
+                                    resultSetListUsers.getLong(user_id),
+                                    resultSetListUsers.getString(user_firstName),
+                                    resultSetListUsers.getString(user_lastName),
+                                    temp
+                            );
+                            // Логирование временного объекта
+                            log.debug("Retrieved task: {}", user);
                             temp.getUserList().add(
-                                    new User(
+/*                                    new User(
                                             resultSetListUsers.getLong(user_id),
                                             resultSetListUsers.getString(user_firstName),
                                             resultSetListUsers.getString(user_lastName),
                                             temp
-                                    )
+                                    )*/
+                                    user
                             );
                         }
                     }
 
                     departmentList.add(temp);
                 }
-
+                log.debug("departmentList : {}", departmentList);
                 return departmentList;
 
             }

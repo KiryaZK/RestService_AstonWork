@@ -145,6 +145,7 @@ public class UserDAO implements DAO<User, Long> {
 
                     userList.add(tempUser);
                 }
+
                 return userList;
             }
         }
