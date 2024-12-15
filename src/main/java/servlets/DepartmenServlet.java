@@ -34,6 +34,7 @@ public class DepartmenServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathValue = req.getPathInfo();
+        resp.setCharacterEncoding("UTF-8");
         if (pathValue == null || pathValue.equals("/")) {
             getAll(resp);
         }

@@ -119,9 +119,7 @@ public class DepartmentDAO implements DAO<Department, Long> {
         try (Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_SQL)) {
 
-            try (ResultSet resultSet = preparedStatement.executeQuery();
-                 PreparedStatement statementListTasks = connection.prepareStatement(SELECT_LIST_TASKS);
-                 PreparedStatement statementListUsers = connection.prepareStatement(SELECT_LIST_USERS)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
 
                 List<Department> departmentList = new ArrayList<>();
 
@@ -133,58 +131,51 @@ public class DepartmentDAO implements DAO<Department, Long> {
                     // Логирование временного объекта
                     log.debug("Retrieved department: {}", temp);
 
-                    statementListTasks.setLong(1, resultSet.getLong(department_id));
-                    statementListUsers.setLong(1, resultSet.getLong(department_id));
+                    try (PreparedStatement statementListTasks = connection.prepareStatement(SELECT_LIST_TASKS);
+                         PreparedStatement statementListUsers = connection.prepareStatement(SELECT_LIST_USERS)) {
 
-                    log.info("setLong for 136 and 137");
+                        statementListTasks.setLong(1, resultSet.getLong(department_id));
+                        statementListUsers.setLong(1, resultSet.getLong(department_id));
 
-                    try (ResultSet resultSetListTasks = statementListTasks.executeQuery();
-                         ResultSet resultSetListUsers = statementListUsers.executeQuery()) {
-                        log.debug("resultSetListTasks: {} and resultSetListUsers: {}", resultSetListTasks, resultSetListUsers);
-                        while (resultSetListTasks.next()) {
-                            Task task = new Task(
-                                    resultSetListTasks.getLong(task_id),
-                                    resultSetListTasks.getString(task_name),
-                                    temp
-                            );
-                            // Логирование временного объекта
-                            log.debug("Retrieved task: {}", task);
-                            temp.getTaskList().add(
-/*                                    new Task(
-                                            resultSetListTasks.getLong(task_id),
-                                            resultSetListTasks.getString(task_name),
-                                            temp
-                                    )*/
-                                    task
-                            );
-                        }
+                        try (ResultSet resultSetListTasks = statementListTasks.executeQuery();
+                             ResultSet resultSetListUsers = statementListUsers.executeQuery()) {
 
-                        while (resultSetListUsers.next()) {
-                            User user =                                    new User(
-                                    resultSetListUsers.getLong(user_id),
-                                    resultSetListUsers.getString(user_firstName),
-                                    resultSetListUsers.getString(user_lastName),
-                                    temp
-                            );
-                            // Логирование временного объекта
-                            log.debug("Retrieved task: {}", user);
-                            temp.getUserList().add(
-/*                                    new User(
-                                            resultSetListUsers.getLong(user_id),
-                                            resultSetListUsers.getString(user_firstName),
-                                            resultSetListUsers.getString(user_lastName),
-                                            temp
-                                    )*/
-                                    user
-                            );
+                            while (resultSetListTasks.next()) {
+                                Task task = new Task(
+                                        resultSetListTasks.getLong(task_id),
+                                        resultSetListTasks.getString(task_name),
+                                        temp
+                                );
+
+                                // Логирование временного объекта
+                                log.debug("Retrieved task: {}", task);
+
+                                temp.getTaskList().add(task);
+                            }
+
+                            while (resultSetListUsers.next()) {
+                                User user = new User(
+                                        resultSetListUsers.getLong(user_id),
+                                        resultSetListUsers.getString(user_firstName),
+                                        resultSetListUsers.getString(user_lastName),
+                                        temp
+                                );
+
+                                // Логирование временного объекта
+                                log.debug("Retrieved user: {}", user);
+
+                                temp.getUserList().add(user);
+                            }
+
                         }
                     }
-
                     departmentList.add(temp);
                 }
-                log.debug("departmentList : {}", departmentList);
-                return departmentList;
 
+                // Логирование временного объекта
+                log.debug("Department full list: {}", departmentList);
+
+                return departmentList;
             }
         }
         catch (SQLException e) {

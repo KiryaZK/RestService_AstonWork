@@ -17,20 +17,21 @@ public class TaskDAO implements DAO<Task, Long> {
     private final DataSource dataSource;
 
     private static final String SELECT_ALL_SQL = """
-            SELECT * FROM tasks t JOIN departments d ON t.departments_id = d.department_id
+            SELECT task_id, task_name, department_id, department_name 
+            FROM tasks t JOIN departments d 
+            ON t.departments_id = d.department_id
             """;
     private static final String SELECT_ID_SQL = """
-            SELECT *
+            SELECT task_id, task_name, department_id, department_name
             FROM tasks t JOIN departments d ON t.departments_id = d.department_id
-            WHERE task_id = ?;
+            WHERE task_id = ?
             """;
     private static final String INSERT_SQL = """
             INSERT INTO tasks (task_name, departments_id)
             VALUES (?, ?)
             """;
     private static final String UPDATE_SQL = """
-            UPDATE tasks 
-            SET task_name = ?, departments_id = ?
+            UPDATE tasks SET task_name = ?, departments_id = ?
             WHERE task_id = ?
             """;
     private static final String DELETE_SQL = """
@@ -38,7 +39,7 @@ public class TaskDAO implements DAO<Task, Long> {
             WHERE task_id = ?
             """;
     private static final String SELECT_LIST_USERS_SQL = """
-            SELECT *
+            SELECT u.user_id AS user_id, task_id, user_firstname, user_lastname, department_id
             FROM users_tasks ut JOIN users u ON ut.user_id = u.user_id
             WHERE ut.task_id = ?
             """;
@@ -130,17 +131,12 @@ public class TaskDAO implements DAO<Task, Long> {
                             rslAllTasks.getString(department_name)
                     );
 
-                    // Логирование временного объекта
-                    log.debug("Retrieved tempDep: {}", tempDep);
-
                     Task task = new Task(
                             rslAllTasks.getLong(task_id),
                             rslAllTasks.getString(task_name),
                             tempDep
                     );
 
-                    // Логирование временного объекта
-                    log.debug("Retrieved task: {}", task);
                     try (PreparedStatement stmListUsers = connection.prepareStatement(SELECT_LIST_USERS_SQL)) {
 
                         stmListUsers.setLong(1, rslAllTasks.getLong(task_id));
@@ -148,23 +144,18 @@ public class TaskDAO implements DAO<Task, Long> {
                         try (ResultSet rslListUsersForTask = stmListUsers.executeQuery()) {
 
                             while (rslListUsersForTask.next()) {
-                                //TODO: Возможно проблема в том, что user_id 2 столбца в одной результ. таблице, укажи кон-ые столбцы
                                 User tempUsr = new User(
-                                        rslAllTasks.getLong(user_id),
-                                        rslAllTasks.getString(user_firstname),
-                                        rslAllTasks.getString(user_lastname),
+                                        rslListUsersForTask.getLong(user_id),
+                                        rslListUsersForTask.getString(user_firstname),
+                                        rslListUsersForTask.getString(user_lastname),
                                         tempDep
                                 );
-                                // Логирование временного объекта
-                                log.debug("tempUser: {}", tempUsr);
                                 task.getUserList().add(tempUsr);
                             }
                         }
                     }
 
                     taskList.add(task);
-                    // Логирование временного объекта
-                    log.debug("taskList {}", taskList);
                 }
 
                 return taskList;
