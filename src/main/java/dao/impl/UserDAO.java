@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The UserDAO class is an implementation of the Dao interface. It provides concrete
+ * implementations for data access operations related to User entities using a DataSource
+ * to interact with the underlying database.
+ */
 public class UserDAO implements DAO<User, Long> {
     private final DataSource dataSource;
     private static final String INSERT_SQL = """
@@ -40,6 +45,7 @@ public class UserDAO implements DAO<User, Long> {
             FROM tasks t JOIN users_tasks ut ON t.task_id = ut.task_id
             WHERE user_id = ?
             """;
+
     private static final String user_firstName = "user_firstName";
     private static final String user_lastName = "user_lastName";
     private static final String user_id = "user_id";
@@ -47,11 +53,20 @@ public class UserDAO implements DAO<User, Long> {
     private static final String department_name = "department_name";
     private static final String task_id = "task_id";
     private static final String task_name = "task_name";
-
+    /**
+     * Constructs a new UserDAO with the specified DataSource.
+     *
+     * @param dataSource The UserDAO to be used for database connections.
+     */
     public UserDAO(DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
+    /**
+     * Retrieves a User by its unique identifier.
+     *
+     * @param id The unique identifier of the User.
+     * @return An Optional containing the User entity if found, or an empty Optional if not found.
+     */
     @Override
     public Optional<User> get(Long id) {
         try (Connection connection = dataSource.getConnection();
@@ -102,7 +117,11 @@ public class UserDAO implements DAO<User, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Retrieves a list of all User available in the database.
+     *
+     * @return A list of User entities, or an empty list if no Users are found.
+     */
     @Override
     public List<User> getAll() {
         try (Connection connection = dataSource.getConnection();
@@ -153,7 +172,11 @@ public class UserDAO implements DAO<User, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Creates a new User in the database.
+     *
+     * @param obj The User entity to be created.
+     */
     @Override
     public void create(User obj) {
         try (Connection connection = dataSource.getConnection();
@@ -183,7 +206,11 @@ public class UserDAO implements DAO<User, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Updates an existing User in the database.
+     *
+     * @param obj The User entity to be updated.
+     */
     @Override
     public void update(User obj) {
         try (Connection connection = dataSource.getConnection();
@@ -205,7 +232,11 @@ public class UserDAO implements DAO<User, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Deletes a User from the database by its unique identifier.
+     *
+     * @param id The unique identifier of the User to be deleted.
+     */
     @Override
     public void delete(Long id) {
         try (Connection connection = dataSource.getConnection();

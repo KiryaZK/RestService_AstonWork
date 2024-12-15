@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The TaskDAO class is an implementation of the Dao interface. It provides concrete
+ * implementations for data access operations related to Task entities using a DataSource
+ * to interact with the underlying database.
+ */
 public class TaskDAO implements DAO<Task, Long> {
     private final DataSource dataSource;
 
@@ -51,6 +56,7 @@ public class TaskDAO implements DAO<Task, Long> {
             DELETE FROM users_tasks
             WHERE user_id = ? AND task_id = ?
             """;
+
     private static final String task_id = "task_id";
     private static final String task_name = "task_name";
     private static final String departments_id = "departments_id";
@@ -61,10 +67,20 @@ public class TaskDAO implements DAO<Task, Long> {
     private static final String user_lastname = "user_lastname";
     private static final Logger log = LoggerFactory.getLogger(DepartmentDAO.class.getName());
 
+    /**
+     * Constructs a new TaskDAO with the specified DataSource.
+     *
+     * @param dataSource The DataSource to be used for database connections.
+     */
     public TaskDAO(DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
+    /**
+     * Retrieves a Task by its unique identifier.
+     *
+     * @param id The unique identifier of the Task.
+     * @return An Optional containing the Task entity if found, or an empty Optional if not found.
+     */
     @Override
     public Optional<Task> get(Long id) {
         try(Connection connection = dataSource.getConnection();
@@ -113,7 +129,11 @@ public class TaskDAO implements DAO<Task, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Retrieves a list of all Task available in the database.
+     *
+     * @return A list of Task entities, or an empty list if no Tasks are found.
+     */
     @Override
     public List<Task> getAll() {
         try (Connection connection = dataSource.getConnection();
@@ -164,23 +184,28 @@ public class TaskDAO implements DAO<Task, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Creates a new Task in the database.
+     *
+     * @param obj The Task entity to be created.
+     */
     @Override
     public void create(Task obj) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
-
+            log.debug("Task obj: {}", obj);
             preparedStatement.setString(1, obj.getTask_name());
-            preparedStatement.setLong(1, obj.getDepartment().getDepartment_id());
+            preparedStatement.setLong(2, obj.getDepartment().getDepartment_id());
 
             int res = preparedStatement.executeUpdate();
-
+            log.debug("Task res: {}", res);
             if (res == 0) {
                 throw new SQLException("A new task row doesn't create");
             }
 
             try (ResultSet keys = preparedStatement.getGeneratedKeys()) {
                 if (keys.next()) {
+                    log.debug("Task res: {}", keys.getLong(1));
                     obj.setTask_id(keys.getLong(1));
                 }
                 else {
@@ -193,7 +218,11 @@ public class TaskDAO implements DAO<Task, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Updates an existing Task in the database.
+     *
+     * @param obj The Task entity to be updated.
+     */
     @Override
     public void update(Task obj) {
         try(Connection connection = dataSource.getConnection();
@@ -213,7 +242,11 @@ public class TaskDAO implements DAO<Task, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Deletes a Task from the database by its unique identifier.
+     *
+     * @param id The unique identifier of the Task to be deleted.
+     */
     @Override
     public void delete(Long id) {
         try (Connection connection = dataSource.getConnection();

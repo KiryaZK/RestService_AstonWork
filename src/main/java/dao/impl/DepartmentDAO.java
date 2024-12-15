@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The DepartmentDAO class is an implementation of the Dao interface. It provides concrete
+ * implementations for data access operations related to Department entities using a DataSource
+ * to interact with the underlying database.
+ */
 public class DepartmentDAO implements DAO<Department, Long> {
     private final DataSource dataSource;
     private static final String INSERT_SQL = """
@@ -47,6 +52,7 @@ public class DepartmentDAO implements DAO<Department, Long> {
             FROM users
             WHERE department_id = ?
             """;
+
     private static final String department_id = "department_id";
     private static final String department_name = "department_name";
     private static final String task_id = "task_id";
@@ -57,10 +63,20 @@ public class DepartmentDAO implements DAO<Department, Long> {
     private static final String user_lastName = "user_lastname";
     private static final Logger log = LoggerFactory.getLogger(DepartmentDAO.class.getName());
 
+    /**
+     * Constructs a new DepartmentDAO with the specified DataSource.
+     *
+     * @param dataSource The DataSource to be used for database connections.
+     */
     public DepartmentDAO(DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
+    /**
+     * Retrieves a Department by its unique identifier.
+     *
+     * @param id The unique identifier of the Department.
+     * @return An Optional containing the Department entity if found, or an empty Optional if not found.
+     */
     @Override
     public Optional<Department> get(Long id) {
         try (Connection connection = dataSource.getConnection();
@@ -126,7 +142,11 @@ public class DepartmentDAO implements DAO<Department, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Retrieves a list of all Department available in the database.
+     *
+     * @return A list of Department entities, or an empty list if no Departments are found.
+     */
     @Override
     public List<Department> getAll() {
         try (Connection connection = dataSource.getConnection();
@@ -195,7 +215,11 @@ public class DepartmentDAO implements DAO<Department, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Creates a new Department in the database.
+     *
+     * @param obj The Department entity to be created.
+     */
     @Override
     public void create(Department obj) {
         try (Connection connection = dataSource.getConnection();
@@ -222,7 +246,11 @@ public class DepartmentDAO implements DAO<Department, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Updates an existing Department in the database.
+     *
+     * @param obj The Department entity to be updated.
+     */
     @Override
     public void update(Department obj) {
         try (Connection connection = dataSource.getConnection();
@@ -242,7 +270,11 @@ public class DepartmentDAO implements DAO<Department, Long> {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Deletes a Department from the database by its unique identifier.
+     *
+     * @param id The unique identifier of the Department to be deleted.
+     */
     @Override
     public void delete(Long id) {
         try (Connection connection = dataSource.getConnection();

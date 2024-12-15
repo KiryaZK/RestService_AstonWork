@@ -8,7 +8,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Configuration class for the DataSource of the application.
+ * Uses HikariCP for managing the database connection pool.
+ * The configuration is loaded from the db.properties file.
+ */
 public class DBConnection {
+    /**
+     * The single instance of the DataSource created based on the configuration.
+     */
     private static final HikariDataSource dataSource;
 
     static {
@@ -28,7 +36,11 @@ public class DBConnection {
             throw new RuntimeException("DBConnection is failed", e);
         }
     }
-
+    /**
+     * Returns the DataSource instance.
+     *
+     * @return the DataSource instance configured based on the properties.
+     */
     public static DataSource getDataSource() {
         return dataSource;
     }
