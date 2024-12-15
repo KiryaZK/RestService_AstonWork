@@ -79,7 +79,6 @@ public class TaskDAO implements DAO<Task, Long> {
                 ResultSet resListUsers = stmListUsers.executeQuery()) {
 
                 if (resultSet.next()) {
-
                     Department tempDep = new Department(
                             resultSet.getLong(department_id),
                             resultSet.getString(department_name)

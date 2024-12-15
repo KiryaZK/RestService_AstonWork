@@ -29,16 +29,23 @@ public class DepartmentDAO implements DAO<Department, Long> {
             WHERE department_id = ?
             """;
     private static final String SELECT_ALL_SQL = """
-            SELECT * FROM departments
+            SELECT department_id, department_name 
+            FROM departments
             """;
     private static final String SELECT_ID_SQL = """
-            SELECT * FROM departments WHERE department_id = ?
+            SELECT department_id, department_name
+            FROM departments 
+            WHERE department_id = ?
             """;
     private static final String SELECT_LIST_TASKS = """
-            SELECT * FROM tasks WHERE departments_id = ?
+            SELECT task_id, task_name, departments_id
+            FROM tasks
+            WHERE departments_id = ?
             """;
     private static final String SELECT_LIST_USERS = """
-            SELECT * FROM users WHERE department_id = ?
+            SELECT user_id, user_firstname, user_lastname, department_id
+            FROM users
+            WHERE department_id = ?
             """;
     private static final String department_id = "department_id";
     private static final String department_name = "department_name";
@@ -66,7 +73,6 @@ public class DepartmentDAO implements DAO<Department, Long> {
             statementListUsers.setLong(1, id);
 
             Optional<Department> department;
-
             try (ResultSet resultSet = statementForIdDep.executeQuery();
                 ResultSet resultSetListTasks = statementListTasks.executeQuery();
                 ResultSet resultSetListUsers = statementListUsers.executeQuery()) {
@@ -77,35 +83,42 @@ public class DepartmentDAO implements DAO<Department, Long> {
                             resultSet.getString(department_name)
                     );
 
+                    log.debug("Department {}", temp);
+
                     while (resultSetListTasks.next()) {
-                        temp.getTaskList().add(
-                                new Task(
-                                        resultSetListTasks.getLong(task_id),
-                                        resultSetListTasks.getString(task_name),
-                                        temp
-                                )
+                        Task task = new Task(
+                                resultSetListTasks.getLong(task_id),
+                                resultSetListTasks.getString(task_name),
+                                temp
                         );
+
+                        temp.getTaskList().add(task);
+
+                        log.debug("Task {}", task);
                     }
 
                     while (resultSetListUsers.next()) {
-                        temp.getUserList().add(
-                                new User(
-                                        resultSetListUsers.getLong(user_id),
-                                        resultSetListUsers.getString(user_firstName),
-                                        resultSetListUsers.getString(user_lastName),
-                                        temp
-                                )
+                        User user = new User(
+                                resultSetListUsers.getLong(user_id),
+                                resultSetListUsers.getString(user_firstName),
+                                resultSetListUsers.getString(user_lastName),
+                                temp
                         );
+
+                        temp.getUserList().add(user);
+
+                        log.debug("User {}", user);
                     }
 
                     department = Optional.of(temp);
 
+                    log.debug("department {}", department);
                 }
                 else {
                     department = Optional.empty();
                 }
             }
-
+            log.debug("department {}", department);
             return department;
 
         }
