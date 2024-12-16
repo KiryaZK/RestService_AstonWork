@@ -1,0 +1,28 @@
+CREATE TABLE IF NOT EXISTS departments
+(
+    department_id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    department_name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS users
+(
+    user_id        BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_firstName VARCHAR(255) NOT NULL,
+    user_lastName  VARCHAR(255) NOT NULL,
+    department_id  BIGINT REFERENCES departments (department_id)
+);
+
+CREATE TABLE IF NOT EXISTS tasks
+(
+    task_id     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    task_name VARCHAR(255) NOT NULL UNIQUE
+    departments_id  BIGINT REFERENCES departments (department_id)
+);
+
+CREATE TABLE IF NOT EXISTS users_tasks
+(
+    users_tasks_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id        BIGINT REFERENCES users (user_id),
+    task_id        BIGINT REFERENCES tasks (task_id),
+    CONSTRAINT unique_link UNIQUE (user_id, task_id)
+);
