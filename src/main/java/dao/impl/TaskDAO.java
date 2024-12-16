@@ -54,7 +54,7 @@ public class TaskDAO implements DAO<Task, Long> {
             """;
     private static final String DELETE_USERS_TASKS_SQL = """
             DELETE FROM users_tasks
-            WHERE user_id = ? AND task_id = ?
+            WHERE task_id = ?
             """;
 
     private static final String task_id = "task_id";
@@ -193,20 +193,30 @@ public class TaskDAO implements DAO<Task, Long> {
     public void create(Task obj) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            log.debug("Task obj: {}", obj);
             preparedStatement.setString(1, obj.getTask_name());
             preparedStatement.setLong(2, obj.getDepartment().getDepartment_id());
 
             int res = preparedStatement.executeUpdate();
-            log.debug("Task res: {}", res);
             if (res == 0) {
                 throw new SQLException("A new task row doesn't create");
             }
 
+            if (obj.getUserList().isEmpty()) return;
+
             try (ResultSet keys = preparedStatement.getGeneratedKeys()) {
+
+
                 if (keys.next()) {
-                    log.debug("Task res: {}", keys.getLong(1));
-                    obj.setTask_id(keys.getLong(1));
+                    Long tas_id = keys.getLong(1);
+                    Long task_dep_id = obj.getDepartment().getDepartment_id();
+
+                    for (User user : obj.getUserList()) {
+                        Long user_dep_id = user.getDepartment().getDepartment_id();
+
+                        if (task_dep_id.equals(user_dep_id)) {
+                            addUserToTasksUsers(tas_id, user.getUser_id(), connection);
+                        }
+                    }
                 }
                 else {
                     throw new SQLException("Failed to create task, ID not received");
@@ -252,6 +262,8 @@ public class TaskDAO implements DAO<Task, Long> {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
 
+            deleteUserToTasksUsers(id, connection);
+
             preparedStatement.setLong(1, id);
 
             int res = preparedStatement.executeUpdate();
@@ -266,28 +278,32 @@ public class TaskDAO implements DAO<Task, Long> {
         }
     }
 
-    public void addUserToTasksUsers(Long task_id, Long user_id) {
-        try (Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement  = connection.prepareStatement(INSERT_INTO_USERS_TASK_SQL)) {
+    public void addUserToTasksUsers(Long task_id, Long user_id, Connection connection) {
+        try (PreparedStatement preparedStatement  = connection.prepareStatement(INSERT_INTO_USERS_TASK_SQL)) {
 
             preparedStatement.setLong(1, user_id);
             preparedStatement.setLong(2, task_id);
 
-            preparedStatement.executeUpdate();
+            int res = preparedStatement.executeUpdate();
+
+            if (res == 0) {
+                throw new SQLException("Failed to update a row in tasks_users table");
+            }
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteUserToTasksUsers(Long task_id, Long user_id) {
-        try (Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(DELETE_USERS_TASKS_SQL)) {
+    public void deleteUserToTasksUsers(Long task_id, Connection connection) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_USERS_TASKS_SQL)) {
 
-            preparedStatement.setLong(1, user_id);
-            preparedStatement.setLong(2, task_id);
+            preparedStatement.setLong(1, task_id);
+            int res = preparedStatement.executeUpdate();
 
-            preparedStatement.executeUpdate();
+            if (res == 0) {
+                throw new SQLException("Failed to delete a row in users_tasks table");
+            }
         }
         catch (SQLException e) {
             throw new RuntimeException(e);

@@ -2,12 +2,10 @@ package servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.ServiceFactory;
-import dto.DepartmentDTO;
 import dto.TaskDTO;
 import services.Service;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,6 +71,7 @@ public class TaskServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         TaskDTO taskDTO = objectMapper.readValue(req.getReader(), TaskDTO.class);
         taskService.create(taskDTO);
         resp.setStatus(HttpServletResponse.SC_CREATED);
@@ -93,6 +92,7 @@ public class TaskServlet extends HttpServlet {
             return;
         }
         Long id = Long.parseLong(pathValue.substring(1));
+        req.setCharacterEncoding("UTF-8");
         TaskDTO taskDTO = objectMapper.readValue(req.getReader(), TaskDTO.class);
         taskDTO.setTask_id(id);
         taskService.update(taskDTO);

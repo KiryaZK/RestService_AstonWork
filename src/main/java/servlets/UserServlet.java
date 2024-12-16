@@ -73,6 +73,7 @@ public class UserServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         UserDTO userDTO = objectMapper.readValue(req.getReader(), UserDTO.class);
         userService.create(userDTO);
         resp.setStatus(HttpServletResponse.SC_CREATED);
@@ -93,6 +94,7 @@ public class UserServlet extends HttpServlet {
             return;
         }
         Long id = Long.parseLong(pathValue.substring(1));
+        req.setCharacterEncoding("UTF-8");
         UserDTO userDTO = objectMapper.readValue(req.getReader(), UserDTO.class);
         userDTO.setUser_id(id);
         userService.update(userDTO);

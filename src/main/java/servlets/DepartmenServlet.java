@@ -72,6 +72,7 @@ public class DepartmenServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         DepartmentDTO departmentDTO = objectMapper.readValue(req.getReader(), DepartmentDTO.class);
         departmentService.create(departmentDTO);
         resp.setStatus(HttpServletResponse.SC_CREATED);
@@ -92,6 +93,7 @@ public class DepartmenServlet extends HttpServlet {
             return;
         }
         Long id = Long.parseLong(pathValue.substring(1));
+        req.setCharacterEncoding("UTF-8");
         DepartmentDTO departmentDTO = objectMapper.readValue(req.getReader(), DepartmentDTO.class);
         departmentDTO.setDepartment_id(id);
         departmentService.update(departmentDTO);
