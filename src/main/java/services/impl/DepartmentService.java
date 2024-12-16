@@ -78,7 +78,7 @@ public class DepartmentService implements Service<DepartmentDTO, Long> {
      */
     @Override
     public Optional<DepartmentDTO> get(Long id) {
-        Optional<Department> department = departmentDAO.get(id);
+         Optional<Department> department = departmentDAO.get(id);
         if (department.isPresent()) {
             DepartmentDTO departmentDTO = departMapper.toDepartmentDTO(department.get());
 

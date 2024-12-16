@@ -1,11 +1,14 @@
 package dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 public class UserDTO {
     private Long user_id;
     private String user_firstname;
     private String user_lastname;
+    @JsonIgnore
     private DepartmentDTO department;
     private List<TaskDTO> taskList;
 
@@ -73,7 +76,7 @@ public class UserDTO {
                 "user_id = " + user_id +
                 ", user_firstname = '" + user_firstname + '\'' +
                 ", user_lastname = '" + user_lastname + '\'' +
-                ", department = " + department +
+/*                ", department = " + department +*/
                 ", taskList = " + taskList +
                 '}';
     }

@@ -70,7 +70,7 @@ public class Task {
         return "Task{" +
                 "task_id = " + task_id +
                 ", task_name = '" + task_name + '\'' +
-                ", department = " + department +
+/*                ", department = " + department +*/
                 ", userList = " + userList +
                 '}';
     }
