@@ -99,18 +99,20 @@ public class DepartmentDAO implements DAO<Department, Long> {
                             resultSet.getString(department_name)
                     );
 
-                    log.debug("Department {}", temp);
+                    Department copy = new Department(
+                            resultSet.getLong(department_id),
+                            resultSet.getString(department_name)
+                    );
 
                     while (resultSetListTasks.next()) {
                         Task task = new Task(
                                 resultSetListTasks.getLong(task_id),
                                 resultSetListTasks.getString(task_name),
-                                temp
+                                copy
                         );
 
                         temp.getTaskList().add(task);
 
-                        log.debug("Task {}", task);
                     }
 
                     while (resultSetListUsers.next()) {
@@ -118,23 +120,18 @@ public class DepartmentDAO implements DAO<Department, Long> {
                                 resultSetListUsers.getLong(user_id),
                                 resultSetListUsers.getString(user_firstName),
                                 resultSetListUsers.getString(user_lastName),
-                                temp
+                                copy
                         );
 
                         temp.getUserList().add(user);
 
-                        log.debug("User {}", user);
                     }
-
                     department = Optional.of(temp);
-
-                    log.debug("department {}", department);
                 }
                 else {
                     department = Optional.empty();
                 }
             }
-            log.debug("department {}", department);
             return department;
 
         }
@@ -161,8 +158,11 @@ public class DepartmentDAO implements DAO<Department, Long> {
                             resultSet.getLong(department_id),
                             resultSet.getString(department_name)
                     );
-                    // Логирование временного объекта
-                    log.debug("Retrieved department: {}", temp);
+
+                    Department copy = new Department(
+                            resultSet.getLong(department_id),
+                            resultSet.getString(department_name)
+                    );
 
                     try (PreparedStatement statementListTasks = connection.prepareStatement(SELECT_LIST_TASKS);
                          PreparedStatement statementListUsers = connection.prepareStatement(SELECT_LIST_USERS)) {
@@ -177,11 +177,9 @@ public class DepartmentDAO implements DAO<Department, Long> {
                                 Task task = new Task(
                                         resultSetListTasks.getLong(task_id),
                                         resultSetListTasks.getString(task_name),
-                                        temp
+                                        copy
                                 );
 
-                                // Логирование временного объекта
-                                log.debug("Retrieved task: {}", task);
 
                                 temp.getTaskList().add(task);
                             }
@@ -191,11 +189,8 @@ public class DepartmentDAO implements DAO<Department, Long> {
                                         resultSetListUsers.getLong(user_id),
                                         resultSetListUsers.getString(user_firstName),
                                         resultSetListUsers.getString(user_lastName),
-                                        temp
+                                        copy
                                 );
-
-                                // Логирование временного объекта
-                                log.debug("Retrieved user: {}", user);
 
                                 temp.getUserList().add(user);
                             }
@@ -204,9 +199,6 @@ public class DepartmentDAO implements DAO<Department, Long> {
                     }
                     departmentList.add(temp);
                 }
-
-                // Логирование временного объекта
-                log.debug("Department full list: {}", departmentList);
 
                 return departmentList;
             }

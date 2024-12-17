@@ -1,13 +1,11 @@
 package dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
 
 public class TaskDTO {
     private Long task_id;
     private String task_name;
-    @JsonIgnore
+
     private DepartmentDTO department;
     private List<UserDTO> userList;
 
